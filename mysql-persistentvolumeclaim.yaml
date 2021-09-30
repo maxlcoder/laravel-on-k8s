@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: mysql-persistentvolumeclaim
+spec:
+  accessModes: # 访问方式
+    - ReadWriteOnce # 读写
+  resources: # 资源
+    requests: # 请求配置
+      storage: 1Gi # 请求资源大小  

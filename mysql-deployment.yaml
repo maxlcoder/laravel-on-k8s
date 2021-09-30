@@ -1,0 +1,35 @@
+apiVersion: apps/v1 # api 版本，表示管理当前资源需要使用什么版本的 API ，可以通过 kubectl api-versions 来查看目前支持的 API 版本
+kind: Deployment
+metadata: # 对象元数据
+  name: mysql # 对象名称
+  labels: # 对象标签
+    name: mysql # 标签名，为当前 Deployment 添加标签 `name: mysql`，方便其他对象匹配资源
+spec:
+  selector: # 目标选择器，方便被管理，主要用于匹配目标
+    matchLabels: # 指定匹配标签，这里可以选择其他的匹配，例如 matchExpressions 匹配符合对应表达式的资源，这里很显然是匹配标签 `app: mysql` 的对象
+      app: mysql
+  strategy: # 部署策略
+    type: Recreate # 重新创建
+  template: # 模版
+    metadata:
+      labels:
+        app: mysql # 定义部署 Pod 的标签，和上面的标签匹配对应
+    spec:
+      containers: # 容器
+      - name: mysql # 容器名
+        image: mysql:5.7 # 容器镜像
+        env: # 定义环境变量，这里的环境变量是设置当前这个容器创建时的环境变量，也就是初始化指定的环境变量
+          - name: MYSQL_ALLOW_EMPTY_PASSWORD # 变量名
+            value: 'true' # 对应的变量值
+        ports:
+          - containerPort: 3306 # 暴露容器的端口，把容器的端口暴露给调度系统
+        volumeMounts: # 挂载到容器内部的存储卷配置
+          - mountPath: /var/lib/mysql # 存储卷在容器内 Mount 的绝对路径，也就是容器内的这个目录将会对应 Pod 的一个指定目录，这个挂载的目的就是在容器销毁的时候，数据库的数据不丢失，同时也可以多个容器共享该目录的内容。
+            name: mysql-storage # 挂载名称，这个必须要设置，通过借这个和 Pod 绑定目录
+      volumes:
+        - name: mysql-storage # 和上面定义的挂载匹配
+          persistentVolumeClaim: # 申请持久卷，注意和 persistentVolume 的区别，一个存储，一个申请 通过下面的 claimName 指定申请什么样的持久卷
+            claimName: mysql-persistentvolumeclaim # 持久卷的名称，来源 PVC 资源对象，将在其他文件中定义这种资源
+
+# 通过上面的内容可以发现，各种资源在 k8s 内部实现为 对象的形式，很容易组合，关键是掌握相关资源对象的定义，以及使用方式。
+
