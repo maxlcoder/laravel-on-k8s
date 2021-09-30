@@ -1,5 +1,30 @@
-appVersion: apps/v1
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: redis
-  
+spec:
+  selector: # 目标选择器，方便被管理，主要用于匹配目标
+    matchLabels: # 指定匹配标签，这里可以选择其他的匹配，例如 matchExpressions 匹配符合对应表达式的资源，这里很显然是匹配标签 `app: mysql` 的对象
+      app: redis
+  template:
+    metadata:
+      labels:
+        app: redis
+    spec:
+      containers:
+      - name: redis
+        image: redis
+        ports:
+          - containerPort: 6379
+    
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: redis-service
+spec:
+  selector:
+    app: redis
+  ports:
+    - port: 6379
