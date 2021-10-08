@@ -4,7 +4,7 @@ metadata:
   name: redis
 spec:
   selector: # 目标选择器，方便被管理，主要用于匹配目标
-    matchLabels: # 指定匹配标签，这里可以选择其他的匹配，例如 matchExpressions 匹配符合对应表达式的资源，这里很显然是匹配标签 `app: mysql` 的对象
+    matchLabels: # 指定匹配标签，这里可以选择其他的匹配，例如 matchExpressions 匹配符合对应表达式的资源，这里很显然是匹配标签 `app: redis` 的对象
       app: redis
   template:
     metadata:
@@ -28,3 +28,4 @@ spec:
     app: redis
   ports:
     - port: 6379
+      targetPort: 6379

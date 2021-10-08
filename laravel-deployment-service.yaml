@@ -40,3 +40,5 @@ spec:
   ports:
     - port: 80 # 暴露的端口
       targetPort: 80 # 目标容器的端口
+      nodePort: 30081
+  type: NodePort
