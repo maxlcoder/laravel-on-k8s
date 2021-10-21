@@ -1,18 +1,13 @@
 apiVersion: v1
 kind: ConfigMap # 配置
 metadata:
-  name: nginx-config
+  name: nginx-laravel-config
 data:
   config: |-
     server {
       listen 8081;
-      root /app;
-      index index.php;
-      charset utf-8;
-      location ~ \.php$ {
-        fastcgi_pass   php-service:9000;
-        fastcgi_index  index.php;
-        fastcgi_param  SCRIPT_FILENAME  $document_root$fastcgi_script_name;
-        include        fastcgi_params;
+      location / {
+        root   /var/www/laravel/public;
+        index  index.html index.htm;
       }
     }
