@@ -14,3 +14,4 @@ spec:
             name: laravel-nginx-service
             port:
               number: 8081
+  ingressClassName: nginx

@@ -72,10 +72,12 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: laravel-nginx-service
+  name: laravel-nginx-service # service 名称
 spec:
   selector: # 拥有 app=nginx label 的 pod 属于该 service，也就是上面定义的 pod
     app: laravel-nginx
   ports:
     - port: 8081
       targetPort: 8081
+  #     nodePort: 30080
+  # type: NodePort
