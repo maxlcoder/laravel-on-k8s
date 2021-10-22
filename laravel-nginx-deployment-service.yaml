@@ -18,18 +18,25 @@ spec:
         app: laravel-nginx
     spec:
       containers:
-        # - name: laravel # 容器名称
-        #   image: maxlcoder/laravel-docker # 这个是自制的示例镜像，包含项目代码 和 php 环境（php-cli & php-fpm）
-        #   ports:
-        #     - containerPort: 9000
-        #   env:
-        #     - name: DB_HOST
-        #       value: mysql-service # 注意，这个值需要和之前设置的 mysql service 的名称保持一致
-        #     - name: REDIS_HOST
-        #       value: redis-service # 同上
-        #   volumeMounts:
-        #     - name: laravel-code
-        #       mountPath: /var/www/laravel # laravel 容器的挂载地址，共享代码
+        - name: laravel # 容器名称
+          image: maxlcoder/laravel-docker:1.0.1 # 这个是自制的示例镜像，包含项目代码 和 php 环境（php-cli & php-fpm）
+          ports:
+            - containerPort: 9000
+          env:
+            - name: DB_HOST
+              value: mysql-service # 注意，这个值需要和之前设置的 mysql service 的名称保持一致
+            - name: REDIS_HOST
+              value: redis-service # 同上
+          volumeMounts:
+            - name: laravel-code
+              mountPath: /var/www/laravel # laravel 容器的挂载地址，共享代码
+            - name: laravel-init-command
+              mountPath: /var/www/laravel-init.sh
+              subPath: laravel-init.sh
+          lifecycle:
+            postStart:
+              exec:
+                command: ["sh", "-C", "/var/www/laravel-init.sh"]
         - name: nginx
           image: nginx
           ports:
@@ -40,6 +47,7 @@ spec:
             - name: nginx-laravel-config # 挂载配置
               mountPath: /etc/nginx/conf.d/laravel.conf # 指定容器内对应的挂载点，也就是将挂载名对应的内容挂载到容器内这个设定的挂载点
               subPath: laravel.conf
+      initContainers:
 
       volumes:
         - name: laravel-code # laravel 容器和 nginx 容器共享该目录，也即是代码共享
@@ -48,8 +56,17 @@ spec:
           configMap:
             name: nginx-laravel-config # 将 name=config 的 configMap 配置加载
             items:
-              - key: config
+              - key: ningx-config
                 path: laravel.conf
+        - name: laravel-init-command # 这里采用了同一份配置，选取不同的 data 值
+          configMap:
+            name: nginx-laravel-config
+            defaultMode: 0777
+            items:
+              - key: laravel-init-command
+                path: laravel-init.sh       
+              
+                
 ---
 
 apiVersion: v1
@@ -62,5 +79,3 @@ spec:
   ports:
     - port: 8081
       targetPort: 8081
-      nodePort: 30080 # 定义外部访问， 测试
-  type: NodePort # 通过 nodeIp:nodePort 访问
