@@ -19,14 +19,18 @@ spec:
     spec:
       containers:
         - name: laravel # 容器名称
-          image: maxlcoder/laravel-docker:1.0.1 # 这个是自制的示例镜像，包含项目代码 和 php 环境（php-cli & php-fpm）
+          image: maxlcoder/laravel-docker:1.0.9 # 这个是自制的示例镜像，包含项目代码 和 php 环境（php-cli & php-fpm）
           ports:
             - containerPort: 9000
           env:
+            - name: APP_KEY
+              value: base64:FIbWkXmduFKC8VjL1Y9mSyr8SZOcC1B2qo+ZPwg7W34=
             - name: DB_HOST
               value: mysql-service # 注意，这个值需要和之前设置的 mysql service 的名称保持一致
             - name: REDIS_HOST
               value: redis-service # 同上
+            - name: CACHE_DRIVER
+              value: redis
           volumeMounts:
             - name: laravel-code
               mountPath: /var/www/laravel # laravel 容器的挂载地址，共享代码
