@@ -51,7 +51,6 @@ spec:
             - name: nginx-laravel-config # 挂载配置
               mountPath: /etc/nginx/conf.d/laravel.conf # 指定容器内对应的挂载点，也就是将挂载名对应的内容挂载到容器内这个设定的挂载点
               subPath: laravel.conf
-      initContainers:
 
       volumes:
         - name: laravel-code # laravel 容器和 nginx 容器共享该目录，也即是代码共享
